@@ -51,20 +51,21 @@ if (object == _sharedNetworkQueue && [keyPath isEqualToString:@"operationCount"]
 * 完全支持 ARC
 ####一般你只会在新项目中使用新的网络框架。MKNetworkKit并不意味着要放弃已有的框架（当然你也可以放弃，这会是个乏味的工作）。对于新的项目，你总是想使用 ARC。当你看到本文的时候，很可能 MKNetworkKit  会是仅有的完全支持 ARC 的网络框架。ARC 通常比非 ARC 代码更快。
  
-* 用法
+### 用法
 ####Ok，我就不“自卖自夸”了。让我们立即了解如果使用这个框架。
 ###添加MKNetworkKit
-#####1.将 MKNetworkKit 目录拖到项目中
-#####2.添加下列框架： CFNetwork.Framework,SystemConfiguration.framework,Security.framework and ImageIO.Framework.
-#####3.将 MKNetworkKit.h 头文件包含到 PCH 文件中
-#####4.对于 iOS，删除 NSAlert+MKNetworkKitAdditions.h
-#####5.对于 Mac，删除 UIAlertView+MKNetworkKitAdditions.h
-#####   总共只需要 5 个核心文件，真是一个强大的网络开发包
+    1.将 MKNetworkKit 目录拖到项目中
+    2.添加下列框架： CFNetwork.Framework,SystemConfiguration.framework,Security.framework and ImageIO.Framework.
+    3.将 MKNetworkKit.h 头文件包含到 PCH 文件中
+    4.对于 iOS，删除 NSAlert+MKNetworkKitAdditions.h
+    5.对于 Mac，删除 UIAlertView+MKNetworkKitAdditions.h
+        总共只需要 5 个核心文件，真是一个强大的网络开发包
 
 ###MKNetworkKit 的类
-    * MKNetworkOperation
-    * MKNetworkEngine
-    * 一些工具类 (Apple 的 Reachability) 以及类别
+
+    *  MKNetworkOperation
+    *  MKNetworkEngine
+    *  一些工具类 (Apple 的 Reachability) 以及类别
 
 ####我喜欢简单。苹果已经写了最基本最核心的网络代码。第 3 方框架需要的是提供一个优雅的网络队列最多再加上缓存。我认为第3方框架不应该超过 10 个类（无论它是网络的还是 UIKit 还是别的什么）。超过这个数就太臃肿了。Three20 就是一个例子。现在 ShareKit 又是这样。尽管它们是优秀的，但仍然是庞大和臃肿的。ASIHttpRequest or AFNetworking 比 RESTKit 更轻，JSONKit比TouchJSON (或者任何 TouchCode 库)更轻。这只是我自己的看法，但当一个第三方库的代码超过程序源代码1/3，我就不会使用它。
 ####框架臃肿带来的问题是很难理解它的内部工作机制，以及很难根据自己的需求定制它（当你需要时）。我曾经写过的一些框架（例如MKStoreKit ，用于应用程序内购的 ）总是易于使用，我认为MKNetworkKit 也应该是这样。对于 MKNetworkKit ，你所需要了解的就是暴露在两个类MKNetworkOperation 和 MKNetworkEngine 中的方法。MKNetworkOperation 就好比ASIHttpRequest类。它是一个NSOperation 子类，封装了你的 request 和 response 类。对于每个网络操作，你需要创建一个MKNetworkOperation 。
@@ -112,14 +113,15 @@ typedef void (^CurrencyResponseBlock)(double rate);
 ~~~~
 
 ####按如下顺序编写 engine类方法：
-#####1.根据参数准备 URL
-#####2.创建一个 MKNetworkOperation 对象
-#####3.设置方法参数
-#####4.设置 operation 的 completion 块和 error 块（在 completation 块中处理 response 并转换为模型）
-#####5.可选地，添加一个 progress 块（或者在 view controller 中做这个）
-#####6.如果 operation 是下载，设置下载流（通常是文件）。这步也是可选的
-#####7.当 operation 完成，处理结果并调用方法块，并将数据返回给调用者。
-#####示例代码如下：
+    1.根据参数准备 URL
+    2.创建一个 MKNetworkOperation 对象
+    3.设置方法参数
+    4.设置 operation 的 completion 块和 error 块（在 completation 块中处理 response 并转换为模型）
+    5.可选地，添加一个 progress 块（或者在 view controller 中做这个）
+    6.如果 operation 是下载，设置下载流（通常是文件）。这步也是可选的
+    7.当 operation 完成，处理结果并调用方法块，并将数据返回给调用者。
+
+####示例代码如下：
 ~~~~objc
 MKNetworkOperation *op = [self operationWithPath:YAHOO_URL(sourceCurrency, targetCurrency)
 params:nil  httpMethod:@"GET"];
