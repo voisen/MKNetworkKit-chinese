@@ -9,7 +9,7 @@ MKNetworkKit 的中文说明版本
 ###什么是MKNetworkKit?
 ####MKNetworkKit是一个 O-C 编写的网络框架，支持块，ARC 且用法简单。MKNetworkKit 集 ASIHTTPRequest 和 AFNetworking 两个框架于一体。在集成二者的优秀特性之外，还增加了一堆新的功能。尤其是，相比起其它框架，它能让你更轻松地编写代码。它让你彻底远离那些恶心的网络代码。
 
-##特点
+###特点
 
 * 超轻量级框架
 * 整个框架只有 2 个类和一些类别方法。因此，它的使用极其简单。
@@ -17,7 +17,8 @@ MKNetworkKit 的中文说明版本
 * 高度依赖互联网连接的 app 应该优先考虑网络线程的并发数。不幸的是，没有任何网络框架在这方面做得够好。因此，一旦你在程序中没有控制好网络线程的并发数，就极易导致出错。
 
 ####假设你要上传一堆图片到服务器上。绝大多数移动网络（3G）不会允许你对同一个IP 地址的 HTTP 并发连接数超过 2 个。换句话说，在设备上，你不能从 3G 网络中获得 2 个以上的 HTTP 并发连接。对于 Edge 则更糟，大多数情况不能超过1 个。相比较家用宽带网络（Wifi），则这个限制要宽得多（6 个）。但是，你不可能总是使用 wifi，你必须也考虑到有限网络（窄带）的连通性。更多的时候，iDevice设备几乎都能连接到 3G 网络，因此，你同时只能上传 2 张图片。但是，真正的问题不是缓慢的上传速度，而是另一种情况。在你打开一个 view 试图加载缩略图（不同的view）时，上传线程被运行到后台。如果你没有控制好上传队列中的线程数，你的缩略图会加载超时。这是不正常的。正确的方式是优化缩略图加载线程，或者让线程等待直到上传完成再加载缩略图。这需要你在整个程序中只拥有一个queue 队列。MKNetworkKit 在它的每个实例中使用单例来保证这一点。并不是说MKNetworkKit 是单例的，而是说它的共享队列是单例的。
-*正确显示网络状态指示
+
+* 正确显示网络状态指示
 ####许多第 3 方框架都通过一个“网络连接数增加/减少”的方法回调来显示网络状态，MKNetworkKit则由于使用了单例的共享队列，能自动显示网络状态。在共享队列中有一个线程通过 KVO 方式会随时观察 operationCount 属性。因此对于开发者，一般情况下根本不需要操心网络状态的显示。
 ~~~~objc
 if (object == _sharedNetworkQueue && [keyPath isEqualToString:@"operationCount"]) {
@@ -25,25 +26,32 @@ if (object == _sharedNetworkQueue && [keyPath isEqualToString:@"operationCount"]
      }
 ~~~~
 
-*自动改变队列大小
+* 自动改变队列大小
 ####如前所述，绝大部分移动网络不允许 2 个以上的并发连接，因此你的队列大小在3G 网络下应当设置为 2。 MKNetworkKit 会自动为你处理好这个。当网络出于3G/EDGE/GPRS 时，它会将并发数调整到 2。当网络处于 Wifi 网络时，则自动调整到 6。当你通过 3G 网络中从远程服务器加载缩略图时，这种调整能带来极大的好处。
-*自动缓存
+
+* 自动缓存
 ####MKNetworkKit 能自动缓存你所有的 GET 请求。当你再次发起同样的请求时，MKNetworkKit 随即就能调用 response缓存（如果可用的话）传递给 handler 进行处理。当然，它同时也向服务器发出请求。一旦获得服务器数据，handler 被再次要求处理新获取的数据。也就是说，你不用手动缓存。你只需要使用：
 ~~~~objc
  [[MKNetworkEngine sharedEngine] useCache];
 ~~~~
 ####当然，你可以覆盖这个方法（子类化），定制你的缓存路径和缓存占用的内存开销。
-*冻结网络操作
+
+* 冻结网络操作
 ####MKNetworkKit 能够“冻结”网络操作。在一个网络操作被“冻结”的情况下，一旦网络连断开，它们将自动序列化并在设备再次连线时自动被提交一次。类似 twitter 客户端的“drafts”。当你提交一篇 tweet 时，如果网络被标记为“可冻结”，MKNetworkKit 会自动执行冻结并储存这些请求。因此会在将来推迟发送这篇 tweet。整个过程不需要你写一行代码。这个特性你可以用于其他操作，诸如收藏一篇 tweet 或者从 Goolge reader 客户端共享一个帖子，加一个链接到Instapaper 中，等等。
-*类似的请求只执行一个操作
+
+* 类似的请求只执行一个操作
 ####当你加载缩略图（针对 twitter stream）时，你最终得为每个实际的图片创建一个新的请求。实际上你所进行的多个请求都是同一个URL。MKNetworkKit 对于队列中的每个 GET 请求都只会执行一次。它还不能到缓存 POST 请求。
-*图片缓存
+
+* 图片缓存
 ####MKNetworkKit 内置了缩略图缓存。只要覆盖几个方法，就可以设置内存中最大能缓存的图片数量，以及缓存要保存到目录。当然，你也可以不覆盖这些方法。
-*性能
+
+* 性能
 ####即速度。MKNetworkKit 缓存是内置的，就如 NSCache,当发现有内存警告，缓存到内存中的数据将被写入缓存目录。
-*完全支持 ARC
+ 
+* 完全支持 ARC
 ####一般你只会在新项目中使用新的网络框架。MKNetworkKit并不意味着要放弃已有的框架（当然你也可以放弃，这会是个乏味的工作）。对于新的项目，你总是想使用 ARC。当你看到本文的时候，很可能 MKNetworkKit  会是仅有的完全支持 ARC 的网络框架。ARC 通常比非 ARC 代码更快。
-*用法
+ 
+* 用法
 ####Ok，我就不“自卖自夸”了。让我们立即了解如果使用这个框架。
 ###添加MKNetworkKit
 #####1.将 MKNetworkKit 目录拖到项目中
@@ -54,9 +62,9 @@ if (object == _sharedNetworkQueue && [keyPath isEqualToString:@"operationCount"]
 #####   总共只需要 5 个核心文件，真是一个强大的网络开发包
 
 ###MKNetworkKit 的类
-    *MKNetworkOperation
-    *MKNetworkEngine
-    *一些工具类 (Apple 的 Reachability) 以及类别
+    * MKNetworkOperation
+    * MKNetworkEngine
+    * 一些工具类 (Apple 的 Reachability) 以及类别
 
 ####我喜欢简单。苹果已经写了最基本最核心的网络代码。第 3 方框架需要的是提供一个优雅的网络队列最多再加上缓存。我认为第3方框架不应该超过 10 个类（无论它是网络的还是 UIKit 还是别的什么）。超过这个数就太臃肿了。Three20 就是一个例子。现在 ShareKit 又是这样。尽管它们是优秀的，但仍然是庞大和臃肿的。ASIHttpRequest or AFNetworking 比 RESTKit 更轻，JSONKit比TouchJSON (或者任何 TouchCode 库)更轻。这只是我自己的看法，但当一个第三方库的代码超过程序源代码1/3，我就不会使用它。
 ####框架臃肿带来的问题是很难理解它的内部工作机制，以及很难根据自己的需求定制它（当你需要时）。我曾经写过的一些框架（例如MKStoreKit ，用于应用程序内购的 ）总是易于使用，我认为MKNetworkKit 也应该是这样。对于 MKNetworkKit ，你所需要了解的就是暴露在两个类MKNetworkOperation 和 MKNetworkEngine 中的方法。MKNetworkOperation 就好比ASIHttpRequest类。它是一个NSOperation 子类，封装了你的 request 和 response 类。对于每个网络操作，你需要创建一个MKNetworkOperation 。
@@ -71,7 +79,7 @@ if (object == _sharedNetworkQueue && [keyPath isEqualToString:@"operationCount"]
     self.engine = [[YahooEngine alloc] initWithHostName:@"download.finance.yahoo.com" customHeaderFields:headerFields];
 ~~~~
 
-~注意，yahoo 并不识别你在头中发送x-client-identifier 给它，这个示例仅仅是演示这个特性而
+~ 注意，yahoo 并不识别你在头中发送x-client-identifier 给它，这个示例仅仅是演示这个特性而
 由于使用了 ARC 代码，作为开发者你需要拥有（强引用）Engine对象。
 一旦你创建了一个 MKNetworkEngine子类, Reachability 即自动实现。当你的服务器由于某些情况挂了，主机名不可访问，你的请求会自动被冻结。关于“冻结”，请参考后面的“冻结操作”小节。
 ####步骤 2:设计Engine 类 (关注分离)
@@ -128,8 +136,75 @@ params:nil  httpMethod:@"GET"];
     return op; 
 ~~~~
 
-上述代码格式化 URL 并创建了 MKNetworkOperation。设置完 completion 和 error 块之后，将 operation 加入到队列（通过父类的 enqueueOperation 方法），然后返回一个 operation 的引用。因此，如果你在 viewDidAppear 中调用这个方法，则在 viewWillDisappear 方法中取消operation。取消 operation 将释放 operation 以便执行 queue 中用于其他view 的 operation（牢记，在移动网络中只有2 个 operation 能被同时进行，当 operation 不再需要时取消它们能提升 app 的性能和速度）。
-在 viewcontroller 中也可以添加一个 progress 块用以刷新UI。例如：
+#####上述代码格式化 URL 并创建了 MKNetworkOperation。设置完 completion 和 error 块之后，将 operation 加入到队列（通过父类的 enqueueOperation 方法），然后返回一个 operation 的引用。因此，如果你在 viewDidAppear 中调用这个方法，则在 viewWillDisappear 方法中取消operation。取消 operation 将释放 operation 以便执行 queue 中用于其他view 的 operation（牢记，在移动网络中只有2 个 operation 能被同时进行，当 operation 不再需要时取消它们能提升 app 的性能和速度）。
+#####在 viewcontroller 中也可以添加一个 progress 块用以刷新UI。例如：
 
+~~~~objc
+    [self.uploadOperation onUploadProgressChanged:^(double progress) {   
+        DLog(@"%.2f", progress*100.0);              
+        self.uploadProgessBar.progress = progress;    
+     }];
+~~~~
+####MKNetworkEngine 也有一个只用 URL 创建 operation 的有用方法。因此第1行代码也可以写成：
+~~~~objc 
+MKNetworkOperation *op = [self operationWithPath:YAHOO_URL(sourceCurrency, targetCurrency)];
+~~~~
+##### ! 注意，请求的 URL将自动添加上主机名（在 engine 实例化时指定的）。
 
+####像这样的实用方法 MKNetworkEngine还有许多，你可以查看头文件。
+###例2:
+####上传图片到服务器 (例如 TwitPic)。
+#####现在让我们看一个上传图片到服务器的例子。要上传图片，显然要 operation 能编码 multi-part 表单数据。 MKNetworkKit 使用类似 ASIHttpRequest 的方式。
+#####你可以非常简单地通过MKNetworkOperation 的 addFile:forKey:方法将一个文件作为请求中的 multi-part 表单数据提交。
+#####MKNetworkOperation 也有一个方法，可以将图片以 NSData 的方式提交。即 addData:forKey: 方法，它可以将图片以NSData 的方法上传到服务器。 (例如直接从相机中捕获的图片).
+###例3:
+####下载文件到本地目录 (缓存)
+#####使用MKNetworkKit 从服务器下载文件并保存到 iPhone 的本地目录非常简单。
+#####只需要设置 MKNetworkOperation的outputStream 。
+~~~~objc 
+[operation setDownloadStream:[NSOutputStream outputStreamToFileAtPath:@"/Users/mugunth/Desktop/DownloadedFile.pdf" append:YES]];
+~~~~
+
+####你可以设置多个 outputStream 到一个 operation，将同一文件保存到几个地方（例如其中一个是你的缓存目录，另一个用做你的工作目录）。
+
+###例4:
+####缓存图片的缩略图
+####对于下载图片，你可能需要提供一个绝对 URL 地址而不是一个路径。
+####MKNetworkEngine 的operationWithURLString:params:httpMethod: 方法根据绝对 URL地址来创建网络线程。
+####MKNetworkEngine 相当聪明。它会将同一个 URL 的多次 GET 请求合并成一个，当 operation 完成时它会通知所有的块。这显著提升了抓取图片 URL 以渲染缩略图的速度.
+####子类化 MKNetworkEngine然后覆盖图片的缓存目录及缓存的大小。如果你不想定制这二者，你可以直接调用 MKNetworkEngine中的方法来下载图片。这是我极力推荐的。
+###缓存operation
+####MKNetworkKit 默认会缓存所有请求。你所需要的仅仅是在你自己的 engine 中打开它。当执行一个 GET 请求时，如果上次的 response 已缓存，相应的 completion 块将用缓存的response 进行调用（瞬间）。要想知道 response 是否缓存，可以调用 isCachedResponse 方法，如下所示：
+~~~~objc 
+[op onCompletion:^(MKNetworkOperation *completedOperation) {
+          if([completedOperation isCachedResponse]) {
+              DLog(@"Data from cache");
+          }else {
+              DLog(@"Data from server");
+          }
+            DLog(@"%@", [completedOperation responseString]);
+      }
+onError:^(NSError* error) {
+            errorBlock(error);
+}];
+~~~~
+
+###冻结operation
+####MKNetworkKit 的一个最有趣的特性是它内置的冻结 operation 特性。你只需要设置 operation 的 freeesable 属性就可以。几乎什么也不用做！
+~~~~objc
+[op setFreezable:YES];
+~~~~
+####冻结是指 operation 在网络被断开时自动序列化并在网络恢复后自动执行。例如当你离线时也能够进行收藏tweet 的操作，然后在你再次上线时 operation 自动恢复执行。
+####在应用程序进入后台时，冻结的 operation 也会被持久化到磁盘。然后在应用程序回到前台后自动恢复执行。
+####MKNetworkOperation 中的有用方法
+#####如下所示，MKNetworkOperation 公开了一些有用的方法，你可从中获取各种格式的 response 数据：
+*	responseData
+*	responseString
+*	responseJSON (Only on iOS 5)
+*	responseImage
+*	responseXML
+*	error
+####当 operation 执行完时，这些方法被用于获取响应数据。如果格式不正确，方法会返回nil。例如，响应的数据明明是一个 HTML 格式，你用 responseImage 方法只会得到 nil。只有 responseData 能保证无论什么格式都返回正确，而其他方法你必须确保和相应的repsone 类型匹配。
+####有用的宏
+####DLog 和 ALog 宏被无耻地从 Stackoverflow 剽窃来了，我找不到源作者。如果是你写的，请告诉我。
 
