@@ -74,7 +74,7 @@ if (object == _sharedNetworkQueue && [keyPath isEqualToString:@"operationCount"]
 ####它是伪单例，它的子类的每个请求都共用唯一的一个队列。你可以在应用程序委托中retain 这个 MKNetworkEngine ，就像CoreData 的 managedObjectContext 类一样。在使用MKNetworkKit 时，创建一个 MKNetworkEngine 子类将你的网络请求进行逻辑上的分组。例如，将所有关于 Yahoo 的方法放在一个类，所有 Facebook 有关的方法放进另一个类。来看 3 个实际使用的例子。
 ###例1:
 ####创建一个  “YahooEngine” 从 Yahoo 财经服务器抓取货币汇率。
-    步骤 1:创建YahooEngine 类继承于MKNetworkEngine。MKNetworkEngine 使用主机名和指定的头（如果有的话）进行初始化。头信息可以是nil。如果你是在自己的 REST 服务器上，你可以考虑加一个客户端 app 的版本或者其他信息（比如客户端的标识）。
+####步骤 1:创建YahooEngine 类继承于MKNetworkEngine。MKNetworkEngine 使用主机名和指定的头（如果有的话）进行初始化。头信息可以是nil。如果你是在自己的 REST 服务器上，你可以考虑加一个客户端 app 的版本或者其他信息（比如客户端的标识）。
 ~~~~objc
     NSMutableDictionary *headerFields = [NSMutableDictionary dictionary]; 
     [headerFields setValue:@"iOS" forKey:@"x-client-identifier"];
