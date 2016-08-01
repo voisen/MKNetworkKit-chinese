@@ -22,7 +22,7 @@ MKNetworkKit 的中文说明版本
 ####许多第 3 方框架都通过一个“网络连接数增加/减少”的方法回调来显示网络状态，MKNetworkKit则由于使用了单例的共享队列，能自动显示网络状态。在共享队列中有一个线程通过 KVO 方式会随时观察 operationCount 属性。因此对于开发者，一般情况下根本不需要操心网络状态的显示。
 ~~~~objc
 if (object == _sharedNetworkQueue && [keyPath isEqualToString:@"operationCount"]) {
-     [UIApplication sharedApplication].networkActivityIndicatorVisible =         ([_sharedNetworkQueue.operations count] < 0);
+     [UIApplication sharedApplication].networkActivityIndicatorVisible = ([_sharedNetworkQueue.operations count] < 0);
      }
 ~~~~
 
@@ -55,7 +55,8 @@ if (object == _sharedNetworkQueue && [keyPath isEqualToString:@"operationCount"]
 ####Ok，我就不“自卖自夸”了。让我们立即了解如果使用这个框架。
 ###添加MKNetworkKit
     1.将 MKNetworkKit 目录拖到项目中
-    2.添加下列框架： CFNetwork.Framework,SystemConfiguration.framework,Security.framework and ImageIO.Framework.
+    2.添加下列框架： CFNetwork.Framework,SystemConfiguration.framework,
+                    Security.framework and ImageIO.Framework.
     3.将 MKNetworkKit.h 头文件包含到 PCH 文件中
     4.对于 iOS，删除 NSAlert+MKNetworkKitAdditions.h
     5.对于 Mac，删除 UIAlertView+MKNetworkKitAdditions.h
@@ -80,8 +81,10 @@ if (object == _sharedNetworkQueue && [keyPath isEqualToString:@"operationCount"]
     self.engine = [[YahooEngine alloc] initWithHostName:@"download.finance.yahoo.com" customHeaderFields:headerFields];
 ~~~~
 
-    注意，yahoo 并不识别你在头中发送x-client-identifier 给它，这个示例仅仅是演示这个特性而由于使用了 ARC 代码，作为开发者你需要拥有（强引用）Engine对象。
-    一旦你创建了一个 MKNetworkEngine子类, Reachability 即自动实现。当你的服务器由于某些情况挂了，主机名不可访问，你的请求会自动被冻结。关于“冻结”，请参考后面的“冻结操作”小节。
+    注意，yahoo 并不识别你在头中发送x-client-identifier 给它，这个示例仅仅是演示这个特性而由于使用了 ARC 代码，
+    作为开发者你需要拥有（强引用）Engine对象。
+    一旦你创建了一个 MKNetworkEngine子类, Reachability 即自动实现。当你的服务器由于某些情况挂了，主机名不可访问，
+    你的请求会自动被冻结。关于“冻结”，请参考后面的“冻结操作”小节。
 ####步骤 2:设计Engine 类 (关注分离)
 ####现在，开始编写 Yahoo Engine 中的方法，以抓取汇率。这些方法将在ViewController 中被调用。良好的设计体验是确保不要将 engine 类中的 URL/HTTPHeaders 暴露给调用者。你的视图不应该知道URL 或者相关的参数。也就是，只需要向 engine 方法传递货币种类和货币单位就可以了。方法的返回值可能是 double，即汇率，以及获取汇率的时间。由于是异步操作，你应当在块中返回这些值。例如：
 ~~~~objc 
@@ -108,7 +111,8 @@ typedef void (^CurrencyResponseBlock)(double rate);
 ####步骤 4:实现方法
 ####现在，我们来讨论方法实现细节。要从 Yahoo 获得汇率信息，最简单的是发起一个 GET 请求。下列宏用一对指定的货币格式化 URL 字串：We will now discuss the implementationdetails of the method that calculates your currency exchange.Getting currency information from Yahoo,is as simple as making a GET request.I wrote a macro to format this URL for a given currency pair.
 ~~~~objc
-#define YAHOO_URL(__C1__, __C2__)  [NSString stringWithFormat:@"d/quotes.csv?e=.csv&amp;f=sl1d1t1&amp;s=%@%@=X", __C1__, __C2__]
+#define YAHOO_URL(__C1__, __C2__)  [NSString stringWithFormat:
+                @"d/quotes.csv?e=.csv&amp;f=sl1d1t1&amp;s=%@%@=X", __C1__, __C2__]
 ~~~~
 
 ####按如下顺序编写 engine类方法：
@@ -152,18 +156,22 @@ MKNetworkOperation *op = [self operationWithPath:YAHOO_URL(sourceCurrency, targe
 ~~~~
 #### 注意，请求的 URL将自动添加上主机名（在 engine 实例化时指定的）。
 
-    ####像这样的实用方法 MKNetworkEngine还有许多，你可以查看头文件。
+####像这样的实用方法 MKNetworkEngine还有许多，你可以查看头文件。
+
 ###例2:
     上传图片到服务器 (例如 TwitPic)。
-    现在让我们看一个上传图片到服务器的例子。要上传图片，显然要 operation 能编码 multi-part 表单数据。 MKNetworkKit 使用类似 ASIHttpRequest 的方式。
+    现在让我们看一个上传图片到服务器的例子。要上传图片，显然要 operation 能编码 multi-part 表单数据。 
+    MKNetworkKit 使用类似 ASIHttpRequest 的方式。
     你可以非常简单地通过MKNetworkOperation 的 addFile:forKey:方法将一个文件作为请求中的 multi-part 表单数据提交。
-    MKNetworkOperation 也有一个方法，可以将图片以 NSData 的方式提交。即 addData:forKey: 方法，它可以将图片以NSData 的方法上传到服务器。 (例如直接从相机中捕获的图片).
+    MKNetworkOperation 也有一个方法，可以将图片以 NSData 的方式提交。即 addData:forKey: 方法，
+    它可以将图片以NSData 的方法上传到服务器。 (例如直接从相机中捕获的图片).
 ###例3:
     下载文件到本地目录 (缓存)
     使用MKNetworkKit 从服务器下载文件并保存到 iPhone 的本地目录非常简单。
     只需要设置 MKNetworkOperation的outputStream 。
 ~~~~objc 
-[operation setDownloadStream:[NSOutputStream outputStreamToFileAtPath:@"/Users/mugunth/Desktop/DownloadedFile.pdf" append:YES]];
+    [operation setDownloadStream:[NSOutputStream outputStreamToFileAtPath:
+        @"/Users/mugunth/Desktop/DownloadedFile.pdf" append:YES]];
 ~~~~
 
 ####你可以设置多个 outputStream 到一个 operation，将同一文件保存到几个地方（例如其中一个是你的缓存目录，另一个用做你的工作目录）。
@@ -172,8 +180,10 @@ MKNetworkOperation *op = [self operationWithPath:YAHOO_URL(sourceCurrency, targe
     缓存图片的缩略图
     对于下载图片，你可能需要提供一个绝对 URL 地址而不是一个路径。
     MKNetworkEngine 的operationWithURLString:params:httpMethod: 方法根据绝对 URL地址来创建网络线程。
-    MKNetworkEngine 相当聪明。它会将同一个 URL 的多次 GET 请求合并成一个，当 operation 完成时它会通知所有的块。这显著提升了抓取图片 URL 以渲染缩略图的速度.
-    子类化 MKNetworkEngine然后覆盖图片的缓存目录及缓存的大小。如果你不想定制这二者，你可以直接调用 MKNetworkEngine中的方法来下载图片。这是我极力推荐的。
+    MKNetworkEngine 相当聪明。它会将同一个 URL 的多次 GET 请求合并成一个，当 operation 完成时它会通知所有的块。
+    这显著提升了抓取图片 URL 以渲染缩略图的速度.
+    子类化 MKNetworkEngine然后覆盖图片的缓存目录及缓存的大小。如果你不想定制这二者，你可以直接调用 
+    MKNetworkEngine中的方法来下载图片。这是我极力推荐的。
 ###缓存operation
 ####MKNetworkKit 默认会缓存所有请求。你所需要的仅仅是在你自己的 engine 中打开它。当执行一个 GET 请求时，如果上次的 response 已缓存，相应的 completion 块将用缓存的response 进行调用（瞬间）。要想知道 response 是否缓存，可以调用 isCachedResponse 方法，如下所示：
 ~~~~objc 
@@ -191,13 +201,17 @@ onError:^(NSError* error) {
 ~~~~
 
 ###冻结operation
-    MKNetworkKit 的一个最有趣的特性是它内置的冻结 operation 特性。你只需要设置 operation 的 freeesable 属性就可以。几乎什么也不用做！
+    MKNetworkKit 的一个最有趣的特性是它内置的冻结 operation 特性。你只需要设置 operation 的 freeesable 
+    属性就可以。几乎什么也不用做！
 ~~~~objc
 [op setFreezable:YES];
 ~~~~
-    冻结是指 operation 在网络被断开时自动序列化并在网络恢复后自动执行。例如当你离线时也能够进行收藏tweet 的操作，然后在你再次上线时 operation 自动恢复执行。
+
+    冻结是指 operation 在网络被断开时自动序列化并在网络恢复后自动执行。例如当你离线时也能够进行收藏tweet 的操作，
+    然后在你再次上线时 operation 自动恢复执行。
     在应用程序进入后台时，冻结的 operation 也会被持久化到磁盘。然后在应用程序回到前台后自动恢复执行。
     MKNetworkOperation 中的有用方法
+
 ###如下所示，MKNetworkOperation 公开了一些有用的方法，你可从中获取各种格式的 response 数据：
         responseData
         responseString
