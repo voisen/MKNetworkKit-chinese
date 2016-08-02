@@ -92,27 +92,13 @@ if (object == _sharedNetworkQueue && [keyPath isEqualToString:@"operationCount"]
       MKNetworkEngine
       一些工具类 (Apple 的 Reachability) 以及类别
 
-    我喜欢简单。苹果已经写了最基本最核心的网络代码。第 3 方框架需要的是提供一个优雅的网络队列最多再
-    加上缓存。我认为第3方框架不应该超过 10 个类（无论它是网络的还是 UIKit 还是别的什么）。超过这个
-    数就太臃肿了。Three20 就是一个例子。现在 ShareKit 又是这样。尽管它们是优秀的，但仍然是庞大和
-    臃肿的。ASIHttpRequest or AFNetworking 比 RESTKit 更轻，JSONKit比TouchJSON (或者任何
-    TouchCode 库)更轻。这只是我自己的看法，但当一个第三方库的代码超过程序源代码1/3，我就不会使用它。
+我喜欢简单。苹果已经写了最基本最核心的网络代码。第 3 方框架需要的是提供一个优雅的网络队列最多再加上缓存。我认为第3方框架不应该超过 10 个类（无论它是网络的还是 UIKit 还是别的什么）。超过这个数就太臃肿了。Three20 就是一个例子。现在 ShareKit 又是这样。尽管它们是优秀的，但仍然是庞大和臃肿的。ASIHttpRequest or AFNetworking 比 RESTKit 更轻，JSONKit比TouchJSON (或者任何TouchCode 库)更轻。这只是我自己的看法，但当一个第三方库的代码超过程序源代码1/3，我就不会使用它。
 
-    框架臃肿带来的问题是很难理解它的内部工作机制，以及很难根据自己的需求定制它（当你需要时）。我曾经
-    写过的一些框架（例如MKStoreKit ，用于应用程序内购的 ）总是易于使用，我认为MKNetworkKit 也应
-    该是这样。对于 MKNetworkKit ，你所需要了解的就是暴露在两个类MKNetworkOperation 和
-    MKNetworkEngine 中的方法。MKNetworkOperation 就好比ASIHttpRequest类。它是一个NSOperation
-    子类，封装了你的 request 和 response 类。对于每个网络操作，你需要创建一个MKNetworkOperation。
+框架臃肿带来的问题是很难理解它的内部工作机制，以及很难根据自己的需求定制它（当你需要时）。我曾经写过的一些框架（例如MKStoreKit ，用于应用程序内购的 ）总是易于使用，我认为MKNetworkKit 也应该是这样。对于 MKNetworkKit ，你所需要了解的就是暴露在两个类MKNetworkOperation 和MKNetworkEngine 中的方法。MKNetworkOperation 就好比ASIHttpRequest类。它是一个NSOperation子类，封装了你的 request 和 response 类。对于每个网络操作，你需要创建一个MKNetworkOperation。
     
-    MKNetworkEngine 是一个伪单例类，管理程序中的网络队列。它是伪单例的，也就是说，对于简单请求，
-    你可以直接用MKNetworkEngine 中的方法。要进行深度的定制，你应该进行子类化。每个 MKNetworkEngine
-    子类有它自己的Reachability 对象，用于通知它来自服务器的reachability 通知。对于不同的 REST
-    服务器，你可以考虑创建单独的 MKNetworkEngine子类。
+MKNetworkEngine 是一个伪单例类，管理程序中的网络队列。它是伪单例的，也就是说，对于简单请求，你可以直接用MKNetworkEngine 中的方法。要进行深度的定制，你应该进行子类化。每个 MKNetworkEngine子类有它自己的Reachability 对象，用于通知它来自服务器的reachability 通知。对于不同的 REST服务器，你可以考虑创建单独的 MKNetworkEngine子类。
 
-    它是伪单例，它的子类的每个请求都共用唯一的一个队列。你可以在应用程序委托中retain 这个
-    MKNetworkEngine ，就像CoreData 的 managedObjectContext 类一样。在使用MKNetworkKit
-    时，创建一个 MKNetworkEngine 子类将你的网络请求进行逻辑上的分组。例如，将所有关于 Yahoo 
-    的方法放在一个类，所有 Facebook 有关的方法放进另一个类。来看 3 个实际使用的例子。
+它是伪单例，它的子类的每个请求都共用唯一的一个队列。你可以在应用程序委托中retain 这个MKNetworkEngine ，就像CoreData 的 managedObjectContext 类一样。在使用MKNetworkKit时，创建一个 MKNetworkEngine 子类将你的网络请求进行逻辑上的分组。例如，将所有关于 Yahoo 的方法放在一个类，所有 Facebook 有关的方法放进另一个类。来看 3 个实际使用的例子。
 
 ###例1:创建一个  “YahooEngine” 从 Yahoo 财经服务器抓取货币汇率。
 *  步骤 1:创建YahooEngine 类继承于MKNetworkEngine。
