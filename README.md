@@ -123,10 +123,10 @@ MKNetworkEngine 使用主机名和指定的头（如果有的话）进行初始�
     self.engine = [[YahooEngine alloc] initWithHostName:@"download.finance.yahoo.com" customHeaderFields:headerFields];
 ~~~~
 
-    * 注意，yahoo 并不识别你在头中发送x-client-identifier 给它，这个示例仅仅是演示这个特性而由于使用了 ARC 代码，
+    注意，yahoo 并不识别你在头中发送x-client-identifier 给它，这个示例仅仅是演示这个特性而由于使用了 ARC 代码，
     作为开发者你需要拥有（强引用）Engine对象。
 
-    * 一旦你创建了一个 MKNetworkEngine子类, Reachability 即自动实现。当你的服务器由于某些情况挂了，主机名不可访问，
+    一旦你创建了一个 MKNetworkEngine子类, Reachability 即自动实现。当你的服务器由于某些情况挂了，主机名不可访问，
     你的请求会自动被冻结。关于“冻结”，请参考后面的“冻结操作”小节。
 
 *  步骤 2:设计Engine 类 (关注分离)
@@ -254,8 +254,8 @@ onError:^(NSError* error) {
 [op setFreezable:YES];
 ~~~~
 
-    *  冻结是指 operation 在网络被断开时自动序列化并在网络恢复后自动执行。例如当你离线时也能够进行收藏tweet 的操作，
-    *  然后在你再次上线时 operation 自动恢复执行。
+    冻结是指 operation 在网络被断开时自动序列化并在网络恢复后自动执行。例如当你离线时也能够进行收藏tweet 的操作，
+    然后在你再次上线时 operation 自动恢复执行。
 
     在应用程序进入后台时，冻结的 operation 也会被持久化到磁盘。然后在应用程序回到前台后自动恢复执行。
     MKNetworkOperation 中的有用方法
