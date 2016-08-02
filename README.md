@@ -5,9 +5,10 @@
 -----------------------------------------------------------------------------
 ###以下中文说明文档也来自于作者,只用于开发参考
 
-####假设有一个网络框架，它能自动为你缓存 respones,能在你离线时自动记忆你的操作，你觉得怎样？当你离线时，你可以收藏某个 tweet 页或者标记某个 feed 为已读，当你再次上线时，网络框架会自动执行你的这些操作，这一切都不需要你额外编写代码。请看我对于MKNetworkKit 框架的介绍。
+假设有一个网络框架，它能自动为你缓存 respones,能在你离线时自动记忆你的操作，你觉得怎样？当你离线时，你可以收藏某个 tweet 页或者标记某个 feed 为已读，当你再次上线时，网络框架会自动执行你的这些操作，这一切都不需要你额外编写代码。请看我对于MKNetworkKit 框架的介绍。
+
 ###什么是MKNetworkKit?
-####MKNetworkKit是一个 O-C 编写的网络框架，支持块，ARC 且用法简单。MKNetworkKit 集 ASIHTTPRequest 和 AFNetworking 两个框架于一体。在集成二者的优秀特性之外，还增加了一堆新的功能。尤其是，相比起其它框架，它能让你更轻松地编写代码。它让你彻底远离那些恶心的网络代码。
+MKNetworkKit是一个 O-C 编写的网络框架，支持块，ARC 且用法简单。MKNetworkKit 集 ASIHTTPRequest 和 AFNetworking 两个框架于一体。在集成二者的优秀特性之外，还增加了一堆新的功能。尤其是，相比起其它框架，它能让你更轻松地编写代码。它让你彻底远离那些恶心的网络代码。
 
 ###特点
 
@@ -120,7 +121,8 @@ MKNetworkEngine 使用主机名和指定的头（如果有的话）进行初始�
 ~~~~objc
     NSMutableDictionary *headerFields = [NSMutableDictionary dictionary]; 
     [headerFields setValue:@"iOS" forKey:@"x-client-identifier"];
-    self.engine = [[YahooEngine alloc] initWithHostName:@"download.finance.yahoo.com" customHeaderFields:headerFields];
+    self.engine = [[YahooEngine alloc] initWithHostName:@"download.finance.yahoo.com" 
+                                                    customHeaderFields:headerFields];
 ~~~~
 
     注意，yahoo 并不识别你在头中发送x-client-identifier 给它，这个示例仅仅是演示这个特性而由于使用了 ARC 代码，
@@ -187,7 +189,7 @@ params:nil  httpMethod:@"GET"];
     return op; 
 ~~~~
 
-上述代码格式化 URL 并创建了 MKNetworkOperation。设置完 completion 和 error 块之后，将 operation 加入到队列（通过父类的 enqueueOperation 方法），然后返回一个 operation 的引用。因此，如果你在 viewDidAppear 中调用这个方法，则在 viewWillDisappear 方法中取消operation。取消 operation 将释放 operation 以便执行 queue 中用于其他view 的 operation（牢记，在移动网络中只有2 个 operation 能被同时进行，当 operation 不再需要时取消它们能提升 app 的性能和速度）。
+    上述代码格式化 URL 并创建了 MKNetworkOperation。设置完 completion 和 error 块之后，将 operation 加入到队列（通过父类的 enqueueOperation 方法），然后返回一个 operation 的引用。因此，如果你在 viewDidAppear 中调用这个方法，则在 viewWillDisappear 方法中取消operation。取消 operation 将释放 operation 以便执行 queue 中用于其他view 的 operation（牢记，在移动网络中只有2 个 operation 能被同时进行，当 operation 不再需要时取消它们能提升 app 的性能和速度）。
 
 在 viewcontroller 中也可以添加一个 progress 块用以刷新UI。例如：
 
