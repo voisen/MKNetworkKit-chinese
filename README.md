@@ -250,7 +250,7 @@ onError:^(NSError* error) {
 ~~~~
 
 *  冻结operation
-    MKNetworkKit 的一个最有趣的特性是它内置的冻结 operation 特性。你只需要设置 operation 的 freeesable 
+    MKNetworkKit 的一个最有趣的特性是它内置的冻结 operation 特性。你只需要设置 operation 的freeesable 
     属性就可以。几乎什么也不用做！
 ~~~~objc
 [op setFreezable:YES];
