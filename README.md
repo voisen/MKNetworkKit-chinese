@@ -189,7 +189,7 @@ params:nil  httpMethod:@"GET"];
     return op; 
 ~~~~
 
-    上述代码格式化 URL 并创建了 MKNetworkOperation。设置完 completion 和 error 块之后，将 operation 加入到队列（通过父类的 enqueueOperation 方法），然后返回一个 operation 的引用。因此，如果你在 viewDidAppear 中调用这个方法，则在 viewWillDisappear 方法中取消operation。取消 operation 将释放 operation 以便执行 queue 中用于其他view 的 operation（牢记，在移动网络中只有2 个 operation 能被同时进行，当 operation 不再需要时取消它们能提升 app 的性能和速度）。
+~~上述代码格式化 URL 并创建了 MKNetworkOperation。设置完 completion 和 error 块之后，将 operation 加入到队列（通过父类的 enqueueOperation 方法），然后返回一个 operation 的引用。因此，如果你在 viewDidAppear 中调用这个方法，则在 viewWillDisappear 方法中取消operation。取消 operation 将释放 operation 以便执行 queue 中用于其他view 的 operation（牢记，在移动网络中只有2 个 operation 能被同时进行，当 operation 不再需要时取消它们能提升 app 的性能和速度）。
 
 在 viewcontroller 中也可以添加一个 progress 块用以刷新UI。例如：
 
