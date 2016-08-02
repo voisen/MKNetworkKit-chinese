@@ -189,7 +189,7 @@ params:nil  httpMethod:@"GET"];
     return op; 
 ~~~~
 
-~~上述代码格式化 URL 并创建了 MKNetworkOperation。设置完 completion 和 error 块之后，将 operation 加入到队列（通过父类的 enqueueOperation 方法），然后返回一个 operation 的引用。因此，如果你在 viewDidAppear 中调用这个方法，则在 viewWillDisappear 方法中取消operation。取消 operation 将释放 operation 以便执行 queue 中用于其他view 的 operation（牢记，在移动网络中只有2 个 operation 能被同时进行，当 operation 不再需要时取消它们能提升 app 的性能和速度）。
+上述代码格式化 URL 并创建了 MKNetworkOperation。设置完 completion 和 error 块之后，将 operation 加入到队列（通过父类的 enqueueOperation 方法），然后返回一个 operation 的引用。因此，如果你在 viewDidAppear 中调用这个方法，则在 viewWillDisappear 方法中取消operation。取消 operation 将释放 operation 以便执行 queue 中用于其他view 的 operation（牢记，在移动网络中只有2 个 operation 能被同时进行，当 operation 不再需要时取消它们能提升 app 的性能和速度）。
 
 在 viewcontroller 中也可以添加一个 progress 块用以刷新UI。例如：
 
@@ -256,13 +256,14 @@ onError:^(NSError* error) {
 [op setFreezable:YES];
 ~~~~
 
-    冻结是指 operation 在网络被断开时自动序列化并在网络恢复后自动执行。例如当你离线时也能够进行收藏tweet 的操作，
-    然后在你再次上线时 operation 自动恢复执行。
+    冻结是指 operation 在网络被断开时自动序列化并在网络恢复后自动执行。例如当你离线时也能够进行收藏
+    tweet 的操作，然后在你再次上线时 operation 自动恢复执行。在应用程序进入后台时，冻结的 
+    operation 也会被持久化到磁盘。然后在应用程序回到前台后自动恢复执行。
 
-    在应用程序进入后台时，冻结的 operation 也会被持久化到磁盘。然后在应用程序回到前台后自动恢复执行。
-    MKNetworkOperation 中的有用方法
 
-###如下所示，MKNetworkOperation 公开了一些有用的方法，你可从中获取各种格式的 response 数据：
+###MKNetworkOperation 中的有用方法
+
+如下所示，MKNetworkOperation 公开了一些有用的方法，你可从中获取各种格式的 response 数据：
         responseData
         responseString
         responseJSON (Only on iOS 5)
@@ -270,9 +271,9 @@ onError:^(NSError* error) {
         responseXML
         error
 
-    当 operation 执行完时，这些方法被用于获取响应数据。如果格式不正确，方法会返回nil。例如，响
-    应的数据明明是一个 HTML 格式，你用 responseImage 方法只会得到 nil。只有 responseData 能
-    保证无论什么格式都返回正确，而其他方法你必须确保和相应的repsone 类型匹配。
+    当 operation 执行完时，这些方法被用于获取响应数据。如果格式不正确，方法会返回nil。例如，响应的数据明明是一个
+    HTML 格式，你用 responseImage 方法只会得到 nil。只有 responseData 能保证无论什么格式都返回正确，而其他方
+    法你必须确保和相应的repsone 类型匹配。
 
 ####有用的宏
     DLog 和 ALog 宏被无耻地从 Stackoverflow 剽窃来了，我找不到源作者。如果是你写的，请告诉我。
